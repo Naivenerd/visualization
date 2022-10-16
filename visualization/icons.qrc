@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/back.svg</file>
+        <file>icons/open.svg</file>
+        <file>icons/open.png</file>
+        <file>icons/linked_list.png</file>
+        <file>icons/queue.png</file>
+        <file>icons/tree.png</file>
+        <file>icons/layers.svg</file>
+        <file>icons/linked_list_white.png</file>
+        <file>icons/queue_white.png</file>
+        <file>icons/tree_white.png</file>
+        <file>icons/lightbulb_black.svg</file>
+        <file>icons/lightbulb_white.svg</file>
+        <file>icons/settings_black.svg</file>
+        <file>icons/settings_white.svg</file>
+    </qresource>
+</RCC>

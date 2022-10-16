@@ -1,0 +1,42 @@
+QT       += core gui
+QT += svg
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+CONFIG += c++11
+
+# You can make your code fail to compile if it uses deprecated APIs.
+# In order to do so, uncomment the following line.
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+
+SOURCES += \
+    ./src/customScrollContainer.cpp \
+    ./src/customWidgets.cpp \
+    ./src/graph_implement.cpp \
+    ./src/graph_view.cpp \
+    ./src/main.cpp \
+    ./src/mainwindow.cpp \
+    ./src/mycanvas.cpp \
+    ./src/slidepage.cpp
+
+HEADERS += \
+    ./head/customScrollContainer.h \
+    ./head/customWidgets.h \
+    ./head/graph_implement.h \
+    ./head/graph_view.h \
+    ./head/mainwindow.h \
+    ./head/mycanvas.h \
+    ./head/slidepage.h
+
+FORMS += \
+    mainwindow.ui
+
+RC_ICONS = logo.ico
+
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    icons.qrc
