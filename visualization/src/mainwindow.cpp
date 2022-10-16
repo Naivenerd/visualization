@@ -265,8 +265,28 @@ void MainWindow::Init()
     createNewPage->AddContent(whiteSpace);
     createNewPage->AddContent(redescribe);
     createNewPage->AddContent(rename);
-    connect(Queue, &bigIconButton::clicked, createNewPage, [=]()
-            {rename->setValue("Layer_" + QString::asprintf("%d", canvasList.size()));redescribe->setValue("No description");createNewPage->slideIn(); });
+    connect(Queue, &bigIconButton::clicked, createNewPage,
+            [=](){
+            MyCanvas *newCanvas = new MyCanvas(cornerRadius,
+                                                rename->value(),
+                                                redescribe->value(),
+                                                structureSel->value() == 0 ? MyCanvas::AL : MyCanvas::AML,
+                                                dirSel->value() == 0 ? MyCanvas::DG : MyCanvas::UDG, ui->mainWidget);
+             canvasList.push_back(newCanvas);
+             selectionItem *newLayer = new selectionItem(newCanvas->name(), newCanvas->description(), layersPage);
+             layerSel->AddItem(newLayer);
+             layerSel->SetSelection(newLayer);
+             pageList.push_back(newCanvas->settingPage());
+             connect(newLayer, &selectionItem::selected, this, [=](){selectCanvas(newCanvas);});
+             selectCanvas(newCanvas);
+             connect(newCanvas, &MyCanvas::nameChanged, this, [=](QString text){
+                 canvasTitle->setText(text);
+                 canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, canvasTitle->text()).width() + 10);
+                 newLayer->setTitle(text);
+             });
+             connect(newCanvas, &MyCanvas::descChanged, this, [=](QString text){this->canvasDesc->setText(text);newLayer->setDescription(text);});
+             connect(newCanvas, &MyCanvas::setDel, this, [=](MyCanvas *c){curSettingsPage->slideOut();deleteCanvas(c);layerSel->RemoveItem(newLayer);});
+             });
     createNewPage->show();
     pageList.push_back(createNewPage);
 
