@@ -1,4 +1,4 @@
-#ifndef SLIDEPAGE_H
+﻿#ifndef SLIDEPAGE_H
 #define SLIDEPAGE_H
 
 #include <QWidget>
@@ -22,9 +22,9 @@ private:
     bool pressed = false;
     bool enabled = true;
     QWidget *bg;
-    void mousePressEvent(QMouseEvent *event){if(enabled)pressed = true;}
-    void mouseReleaseEvent(QMouseEvent *event){if(enabled && pressed)emit clicked();pressed = false;}
-    void resizeEvent(QResizeEvent *event){bg->resize(this->parentWidget()->size());}
+    void mousePressEvent(QMouseEvent *event){Q_UNUSED(event); if(enabled)pressed = true;}
+    void mouseReleaseEvent(QMouseEvent *event){Q_UNUSED(event);if(enabled && pressed)emit clicked();pressed = false;}
+    void resizeEvent(QResizeEvent *event){Q_UNUSED(event);bg->resize(this->parentWidget()->size());}
 public:
     SheildLayer(QWidget *parent = nullptr) : QWidget(parent){
         bg = new QWidget(this);
@@ -62,20 +62,28 @@ public:
     explicit SlidePage(int radius, QString name, QWidget *parent = nullptr);
     void SetRadius(int radius);
     void SetName(QString name);
-    void AddContent(QWidget* widget){widget->setParent(this);pageContentContainer->addWidget(widget, false);}
     void AddContents(QVector<QWidget*> widgets){pageContentContainer->addWidgets(widgets);}
     void RemoveContents(QVector<QWidget*> widgets){for(int i = 0; i < widgets.size(); i++)pageContentContainer->removeWidget(widgets[i]);}
     void UpdateContents(){pageContentContainer->updateHeight();}
     void ScrollToTop(){pageContentContainer->scrollToTop();}
 
-    void setTheme(QColor color_background, QColor color_content);
+    void setTheme(bool night_mode);
 
+    QVector<textInputItem *> input_items;
+    void AddTextInputItem(textInputItem *widget){input_items.append(widget);AddContent(widget);}
+    QVector<textButton *> text_buttons;
+    void AddTextButton(textButton *widget){text_buttons.append(widget);AddContent(widget);}
+    void AddWhiteSpace(QWidget *widget){AddContent(widget);}
 signals:
     void sizeChange();
 
 public slots:
     void slideIn();
     void slideOut();
+
+private:
+    void AddContent(QWidget* widget){widget->setParent(this);pageContentContainer->addWidget(widget, false);}
+
 
 };
 

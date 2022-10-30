@@ -1,4 +1,4 @@
-#include "./head/mainwindow.h"
+﻿#include "./head/mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include <QPainterPath>
@@ -13,12 +13,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->centralwidget->setMouseTracking(true);
     QTimer *t = new QTimer(this);
     connect(t, &QTimer::timeout, this, [=]()
-            { Init(); });
+            { Init();
+        theme_refresh(); });
     t->setSingleShot(true);
     t->start(10);
 
     connect(ui->adjSizeBtn, &QPushButton::clicked, this, [=]()
-            { controlWindowScale(); });
+            { controlWindowScale();});
 }
 
 void MainWindow::Init()
@@ -69,16 +70,11 @@ void MainWindow::Init()
     textInputItem *GitHub = new textInputItem("git", defaultSettingsPage);
     GitHub->setValue("github.com/Linloir");
     GitHub->setEnabled(false);
-    about_texts.append(GitHub);
-    about_texts.append(lic);
-    about_texts.append(Author);
-    about_texts.append(updateDate);
-    about_texts.append(version);
-    defaultSettingsPage->AddContent(GitHub);
-    defaultSettingsPage->AddContent(lic);
-    defaultSettingsPage->AddContent(Author);
-    defaultSettingsPage->AddContent(updateDate);
-    defaultSettingsPage->AddContent(version);
+    defaultSettingsPage->AddTextInputItem(GitHub);
+    defaultSettingsPage->AddTextInputItem(lic);
+    defaultSettingsPage->AddTextInputItem(Author);
+    defaultSettingsPage->AddTextInputItem(updateDate);
+    defaultSettingsPage->AddTextInputItem(version);
     curSettingsPage = defaultSettingsPage;
     defaultSettingsPage->show();
     pageList.push_back(defaultSettingsPage);
@@ -155,7 +151,6 @@ void MainWindow::Init()
     outerLayout->addWidget(canvasDesc);
 
     /* create default page */
-
     defaultPage = new QWidget(ui->mainWidget);
     defaultPage->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     Linked_List = new bigIconButton(":/icons/icons/linked_list.png", "Linked List", 10, this);
@@ -172,174 +167,29 @@ void MainWindow::Init()
     defaultPageLayout->addWidget(Queue);
     defaultPageLayout->addWidget(BST);
 
-    /* create layers page */
-    // for add new page
-    textInputItem *rename = new textInputItem("Name:", createNewPage);
-    rename->setValue("Layer_" + QString::asprintf("%d", canvasList.size()));
-    textInputItem *redescribe = new textInputItem("Detail:", createNewPage);
-    redescribe->setValue("No description");
-
-    layersPage = new SlidePage(cornerRadius, "LAYERS", ui->mainWidget);
-    layersPage->stackUnder(createNewPage);
-    layerSel = new singleSelectGroup("Layers", layersPage);
-    connect(layerSel, &singleSelectGroup::itemChange, layersPage, [=]()
-            { layersPage->UpdateContents(); });
-    textButton *openFileBtn = new textButton("Open file", layersPage);
-    connect(openFileBtn, &textButton::clicked, this, [=]()
-            {
-        QString inputPath = QFileDialog::getOpenFileName(this, tr("Open map"), " ",  tr("Map File(*.map)"));
-        if(!inputPath.isEmpty()){
-            MyCanvas *newCanvas = loadCanvas(inputPath);
-            if(newCanvas != nullptr){
-                canvasList.push_back(newCanvas);
-                selectionItem *newLayer = new selectionItem(newCanvas->name(), newCanvas->description(), layersPage);
-                layerSel->AddItem(newLayer);
-                layerSel->SetSelection(newLayer);
-                pageList.push_back(newCanvas->settingPage());
-                connect(newLayer, &selectionItem::selected, this, [=](){selectCanvas(newCanvas);});
-                selectCanvas(newCanvas);
-                connect(newCanvas, &MyCanvas::nameChanged, this, [=](QString text){
-                    canvasTitle->setText(text);
-                    canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, canvasTitle->text()).width() + 10);
-                    newLayer->setTitle(text);
-                });
-                connect(newCanvas, &MyCanvas::descChanged, this, [=](QString text){this->canvasDesc->setText(text);newLayer->setDescription(text);});
-                connect(newCanvas, &MyCanvas::setDel, this, [=](MyCanvas *c){curSettingsPage->slideOut();deleteCanvas(c);layerSel->RemoveItem(newLayer);});
-                createNewPage->slideOut();
-            }
-        } });
-    textButton *addNewBtn = new textButton("Create new", layersPage);
-    layersPage->AddContent(addNewBtn);
-    layersPage->AddContent(openFileBtn);
-    layersPage->AddContent(layerSel);
-    connect(addNewBtn, &textButton::clicked, this, [=]()
-            {rename->setValue("Layer_" + QString::asprintf("%d", canvasList.size()));redescribe->setValue("No description");createNewPage->slideIn(); });
-    layersPage->show();
-    pageList.push_back(layersPage);
-
-    /* create add new slide page */
-    createNewPage = new SlidePage(cornerRadius, "CREATE CANVAS", ui->mainWidget);
-    QLineEdit *canvasName = new QLineEdit(this);
-    canvasName->setMaximumHeight(20);
-    QLineEdit *canvasDesc = new QLineEdit(this);
-    canvasDesc->setMaximumHeight(20);
-
-    QWidget *whiteSpace = new QWidget(createNewPage);
-    whiteSpace->setFixedHeight(30);
-    singleSelectGroup *structureSel = new singleSelectGroup("Structure", createNewPage);
-    selectionItem *item_1 = new selectionItem("AL", "Use adjacent list for canvas", createNewPage);
-    selectionItem *item_2 = new selectionItem("AML", "Use multiple adjacent list for canvas", createNewPage);
-    structureSel->AddItem(item_1);
-    structureSel->AddItem(item_2);
-    singleSelectGroup *dirSel = new singleSelectGroup("Mode", createNewPage);
-    selectionItem *item_3 = new selectionItem("DG", "Directed graph", createNewPage);
-    selectionItem *item_4 = new selectionItem("UDG", "Undirected graph", createNewPage);
-    dirSel->AddItem(item_3);
-    dirSel->AddItem(item_4);
-    textButton *submit = new textButton("Create!", createNewPage);
-    connect(submit, &textButton::clicked, this, [=]()
-            {
-        MyCanvas *newCanvas = new MyCanvas(cornerRadius,
-                                           rename->value(),
-                                           redescribe->value(),
-                                           structureSel->value() == 0 ? MyCanvas::AL : MyCanvas::AML,
-                                           dirSel->value() == 0 ? MyCanvas::DG : MyCanvas::UDG, ui->mainWidget);
-        canvasList.push_back(newCanvas);
-        selectionItem *newLayer = new selectionItem(newCanvas->name(), newCanvas->description(), layersPage);
-        layerSel->AddItem(newLayer);
-        layerSel->SetSelection(newLayer);
-        pageList.push_back(newCanvas->settingPage());
-        connect(newLayer, &selectionItem::selected, this, [=](){selectCanvas(newCanvas);});
-        selectCanvas(newCanvas);
-        connect(newCanvas, &MyCanvas::nameChanged, this, [=](QString text){
-            canvasTitle->setText(text);
-            canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, canvasTitle->text()).width() + 10);
-            newLayer->setTitle(text);
-        });
-        connect(newCanvas, &MyCanvas::descChanged, this, [=](QString text){this->canvasDesc->setText(text);newLayer->setDescription(text);});
-        connect(newCanvas, &MyCanvas::setDel, this, [=](MyCanvas *c){curSettingsPage->slideOut();deleteCanvas(c);layerSel->RemoveItem(newLayer);});
-        createNewPage->slideOut(); });
-    createNewPage->AddContent(submit);
-    createNewPage->AddContent(dirSel);
-    createNewPage->AddContent(structureSel);
-    createNewPage->AddContent(whiteSpace);
-    createNewPage->AddContent(redescribe);
-    createNewPage->AddContent(rename);
-    connect(Linked_List, &bigIconButton::clicked, createNewPage,
-            [=](){
-            MyCanvas *newCanvas = new MyCanvas(cornerRadius,
-                                                rename->value(),
-                                                redescribe->value(),
-                                                structureSel->value() == 0 ? MyCanvas::AL : MyCanvas::AML,
-                                                dirSel->value() == 0 ? MyCanvas::DG : MyCanvas::UDG, ui->mainWidget);
-             canvasList.push_back(newCanvas);
-             selectionItem *newLayer = new selectionItem(newCanvas->name(), newCanvas->description(), layersPage);
-             layerSel->AddItem(newLayer);
-             layerSel->SetSelection(newLayer);
-             pageList.push_back(newCanvas->settingPage());
-             connect(newLayer, &selectionItem::selected, this, [=](){selectCanvas(newCanvas);});
-             selectCanvas(newCanvas);
-             connect(newCanvas, &MyCanvas::nameChanged, this, [=](QString text){
-                 canvasTitle->setText(text);
-                 canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, canvasTitle->text()).width() + 10);
-                 newLayer->setTitle(text);
-             });
-             connect(newCanvas, &MyCanvas::descChanged, this, [=](QString text){this->canvasDesc->setText(text);newLayer->setDescription(text);});
-             connect(newCanvas, &MyCanvas::setDel, this, [=](MyCanvas *c){curSettingsPage->slideOut();deleteCanvas(c);layerSel->RemoveItem(newLayer);});
-             });
-    connect(Queue, &bigIconButton::clicked, createNewPage,
-            [=](){
-            MyCanvas *newCanvas = new MyCanvas(cornerRadius,
-                                                rename->value(),
-                                                redescribe->value(),
-                                                structureSel->value() == 0 ? MyCanvas::AL : MyCanvas::AML,
-                                                dirSel->value() == 0 ? MyCanvas::DG : MyCanvas::UDG, ui->mainWidget);
-             canvasList.push_back(newCanvas);
-             selectionItem *newLayer = new selectionItem(newCanvas->name(), newCanvas->description(), layersPage);
-             layerSel->AddItem(newLayer);
-             layerSel->SetSelection(newLayer);
-             pageList.push_back(newCanvas->settingPage());
-             connect(newLayer, &selectionItem::selected, this, [=](){selectCanvas(newCanvas);});
-             selectCanvas(newCanvas);
-             connect(newCanvas, &MyCanvas::nameChanged, this, [=](QString text){
-                 canvasTitle->setText(text);
-                 canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, canvasTitle->text()).width() + 10);
-                 newLayer->setTitle(text);
-             });
-             connect(newCanvas, &MyCanvas::descChanged, this, [=](QString text){this->canvasDesc->setText(text);newLayer->setDescription(text);});
-             connect(newCanvas, &MyCanvas::setDel, this, [=](MyCanvas *c){curSettingsPage->slideOut();deleteCanvas(c);layerSel->RemoveItem(newLayer);});
-             });
-    connect(BST, &bigIconButton::clicked, createNewPage,
-            [=](){
-            MyCanvas *newCanvas = new MyCanvas(cornerRadius,
-                                                rename->value(),
-                                                redescribe->value(),
-                                                structureSel->value() == 0 ? MyCanvas::AL : MyCanvas::AML,
-                                                dirSel->value() == 0 ? MyCanvas::DG : MyCanvas::UDG, ui->mainWidget);
-             canvasList.push_back(newCanvas);
-             selectionItem *newLayer = new selectionItem(newCanvas->name(), newCanvas->description(), layersPage);
-             layerSel->AddItem(newLayer);
-             layerSel->SetSelection(newLayer);
-             pageList.push_back(newCanvas->settingPage());
-             connect(newLayer, &selectionItem::selected, this, [=](){selectCanvas(newCanvas);});
-             selectCanvas(newCanvas);
-             connect(newCanvas, &MyCanvas::nameChanged, this, [=](QString text){
-                 canvasTitle->setText(text);
-                 canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, canvasTitle->text()).width() + 10);
-                 newLayer->setTitle(text);
-             });
-             connect(newCanvas, &MyCanvas::descChanged, this, [=](QString text){this->canvasDesc->setText(text);newLayer->setDescription(text);});
-             connect(newCanvas, &MyCanvas::setDel, this, [=](MyCanvas *c){curSettingsPage->slideOut();deleteCanvas(c);layerSel->RemoveItem(newLayer);});
-             });
-    createNewPage->show();
-    pageList.push_back(createNewPage);
+    connect(Linked_List, &bigIconButton::clicked,
+            this, [=](){
+                     MyListCanvas *newCanvas = new MyListCanvas(cornerRadius,
+                                                                "Linked_List_" + QDateTime::currentDateTime().toString(),
+                                                                "Linked List",
+                                                                ui->mainWidget);
+                     my_list_canvas = newCanvas;
+                     pageList.push_back(newCanvas->settingPage());
+                     selectListCanvas(newCanvas);
+                     connect(newCanvas, &MyListCanvas::nameChanged, this, [=](QString text){
+                         canvasTitle->setText(text);
+                         canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, canvasTitle->text()).width() + 10);
+                     });
+                     connect(newCanvas, &MyListCanvas::descChanged, this, [=](QString text){this->canvasDesc->setText(text);});
+                     connect(newCanvas, &MyListCanvas::setDel, this, [=](MyListCanvas *c){curSettingsPage->slideOut();deleteListCanvas(c);});
+                     newCanvas->night_mode = night_mode;});
 
     ui->displayLayout->addWidget(titleWidget);
     ui->displayLayout->addWidget(defaultPage);
     ui->displayLayout->setAlignment(Qt::AlignTop);
 }
 
-void MainWindow::selectCanvas(MyCanvas *canvas)
+void MainWindow::selectListCanvas(MyListCanvas *canvas)
 {
     if (!curCanvas)
     {
@@ -363,30 +213,22 @@ void MainWindow::selectCanvas(MyCanvas *canvas)
     canvasDesc->setText(curCanvas->description());
 }
 
-void MainWindow::deleteCanvas(MyCanvas *canvas)
+void MainWindow::deleteListCanvas(MyListCanvas *canvas)
 {
-    int index = canvasList.indexOf(canvas);
-    if (index < 0)
-        return;
-    canvasList.erase(canvasList.begin() + index);
     ui->displayLayout->removeWidget(curCanvas);
     curCanvas->hide();
-    if (canvasList.size() > 0)
-    {
-        selectCanvas(canvasList[0]);
-    }
-    else
-    {
-        ui->displayLayout->addWidget(defaultPage);
-        defaultPage->show();
-        curCanvas = nullptr;
-        canvasTitle->setText("START");
-        canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, "START").width() + 10);
-        canvasDesc->setText("Welcome and Greetings!");
-        curSettingsPage = defaultSettingsPage;
-    }
+
+    ui->displayLayout->addWidget(defaultPage);
+    defaultPage->show();
+    curCanvas = nullptr;
+    canvasTitle->setText("START");
+    canvasTitle->setMaximumWidth(QFontMetrics(QFont("Times", 24)).size(Qt::TextSingleLine, "START").width() + 10);
+    canvasDesc->setText("Welcome and Greetings!");
+    curSettingsPage = defaultSettingsPage;
+
     pageList.erase(pageList.begin() + pageList.indexOf(canvas->settingPage()));
     delete canvas;
+    my_list_canvas = nullptr;
     ui->mainWidget->update();
 }
 
@@ -472,6 +314,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
     // Resize border
     if (border)
         border->resize(ui->mainWidget->size() + QSize(2, 2));
@@ -525,22 +368,13 @@ void MainWindow::controlWindowScale()
     }
 }
 
-MyCanvas *MainWindow::loadCanvas(const QString &path)
-{
-    QFile input(path);
-    input.open(QIODevice::ReadOnly);
-    QTextStream ts(&input);
-    QString magicString = ts.readLine();
-    if (magicString != "VFdGeWFXUnZaekl3TURJd05ESTE=")
-        return nullptr;
-    MyCanvas *newCanvas = new MyCanvas(ts, cornerRadius, ui->mainWidget);
-    input.close();
-    return newCanvas;
-}
-
 void MainWindow::theme_switch()
 {
-    theme = static_cast<Theme>(theme + 1);
+    switch (theme) {
+    case Theme_write: theme = Theme_black; night_mode = true; break;
+    case Theme_black: theme = Theme_write; night_mode = false; break;
+    default: theme = Theme_black; break;
+    }
     theme_refresh();
 }
 
@@ -549,8 +383,6 @@ void MainWindow::theme_refresh()
     QColor background_color;
     QColor content_color;
     switch (theme) {
-    case Theme_none:
-        theme = Theme_write;
     case Theme_write:
         background_color = Qt::white;
         content_color = Qt::black;
@@ -563,6 +395,7 @@ void MainWindow::theme_refresh()
     case Theme_black:
         background_color = Qt::black;
         content_color = Qt::white;
+        night_mode = true;
         Linked_List->changeIcon(":/icons/icons/linked_list_white.png");
         Queue->changeIcon(":/icons/icons/queue_white.png");
         BST->changeIcon(":/icons/icons/tree_white.png");
@@ -570,7 +403,7 @@ void MainWindow::theme_refresh()
         themeIcon->changeIcon(":/icons/icons/lightbulb_white.svg");
         break;
     default:
-        break;
+        return;
     }
     setStyleSheet(QString("background-color:%1;color:%2;")
                   .arg(background_color.name(), content_color.name()));
@@ -578,12 +411,14 @@ void MainWindow::theme_refresh()
     settingsIcon->setHoverColor(background_color);
     themeIcon->setDefaultColor(background_color);
     themeIcon->setHoverColor(background_color);
-    defaultSettingsPage->setTheme(background_color, content_color);
-    foreach (textInputItem *text, about_texts) {
-        text->setTheme(background_color, content_color);
+    foreach (SlidePage *page, pageList) {
+        page->setTheme(night_mode);
     }
 
     Linked_List->setScale(0.7); // 调里面icon大小用的
     Queue->setScale(0.3); // 调里面icon大小用的
     BST->setScale(0.1); // 调里面icon大小用的
+
+    if(my_list_canvas)
+        my_list_canvas->setTheme(night_mode);
 }

@@ -1,4 +1,4 @@
-#ifndef CUSTOMWIDGETS_H
+﻿#ifndef CUSTOMWIDGETS_H
 #define CUSTOMWIDGETS_H
 
 #include <QPushButton>
@@ -201,7 +201,7 @@ public:
     bigIconButton(const QString &iconPath, const QString &description, int radius, QWidget *parent = nullptr);
     void setSelectable(bool sel = true) { selectable = sel; }
     void setScale(qreal scale);
-    void changeIcon(const QString &iconPath);
+    void changeIcon(const QString iconPath);
 
 signals:
     void clicked();
@@ -246,7 +246,7 @@ public:
     void setValidator(QValidator *vali) { editor->setValidator(vali); }
     void setEnabled(bool enable = true) { enabled = enable; }
 
-    void setTheme(QColor color_background, QColor color_content);
+    void setTheme(bool night_mode);
 signals:
     void textEdited(QString text);
 };
@@ -273,6 +273,8 @@ private:
 public:
     textButton(QString text, QWidget *parent = nullptr, qreal ratio = 0.5);
     textButton(QString text, QString defC, QString hoverC, QString pressedC, QWidget *parent = nullptr, qreal ratio = 0.5);
+
+    void setTheme(bool night_mode);
 
 signals:
     void clicked();

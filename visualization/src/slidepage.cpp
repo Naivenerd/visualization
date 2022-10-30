@@ -1,4 +1,4 @@
-#include "./head/slidepage.h"
+﻿#include "./head/slidepage.h"
 
 SlidePage::SlidePage(int radius, QString name, QWidget *parent) : QWidget(parent),
                                                                   cornerRadius(radius),
@@ -71,24 +71,40 @@ SlidePage::SlidePage(int radius, QString name, QWidget *parent) : QWidget(parent
             { slideOut(); });
 }
 
-void SlidePage::setTheme(QColor color_background, QColor color_content)
+void SlidePage::setTheme(bool night_mode)
 {
+    QColor background_color = Qt::white;
+    QColor content_color = Qt::black;
+    if(night_mode)
+    {
+        background_color = Qt::black;
+        content_color = Qt::white;
+    }
+    setStyleSheet(QString("background-color:%1;color:%2;")
+                  .arg(background_color.name())
+                  .arg(content_color.name()));
     QString style;
     style = QString("background-color:%1;color:%2;border-radius:%3px;")
-            .arg(color_background.name())
-            .arg(color_content.name())
+            .arg(background_color.name())
+            .arg(content_color.name())
             .arg(cornerRadius);
     bgWidget->setStyleSheet(style);
     style = QString("background-color:%1;color:%2;")
-            .arg(color_background.name())
-            .arg(color_content.name());
+            .arg(background_color.name())
+            .arg(content_color.name());
     setStyleSheet(style);
 
-
+    foreach (textInputItem *input_item, input_items) {
+        input_item->setTheme(night_mode);
+    }
+    foreach (textButton *text_button, text_buttons) {
+        text_button->setTheme(night_mode);
+    }
 }
 
 void SlidePage::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
     bgWidget->resize(this->size());
     sheildLayer->resize(this->parentWidget()->size());
     if (!onShown && !curAni)

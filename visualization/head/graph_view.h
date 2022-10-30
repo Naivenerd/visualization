@@ -1,4 +1,4 @@
-#ifndef GRAPH_VIEW_H
+﻿#ifndef GRAPH_VIEW_H
 #define GRAPH_VIEW_H
 
 #include <QGraphicsView>
@@ -103,7 +103,8 @@ private:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
-    void resizeEvent(QResizeEvent *event) { this->setSceneRect(this->rect()); }
+    void resizeEvent(QResizeEvent *event) {
+        Q_UNUSED(event);this->setSceneRect(this->rect()); }
 
     void changeCursor();
 

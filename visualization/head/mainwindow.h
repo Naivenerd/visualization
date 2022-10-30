@@ -1,11 +1,12 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QVector>
 #include <QGraphicsDropShadowEffect>
+#include <QDateTime>
 #include "slidepage.h"
-#include "mycanvas.h"
+#include "mylistcanvas.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -32,17 +33,15 @@ private:
     QWidget *canvasDisplay = nullptr;
 
     QVector<SlidePage *> pageList;
-    SlidePage *createNewPage = nullptr;
     SlidePage *defaultSettingsPage = nullptr;
     SlidePage *curSettingsPage = nullptr;
-    SlidePage *layersPage = nullptr;
     singleSelectGroup *layerSel = nullptr;
 
-    QVector<MyCanvas *> canvasList;
-    MyCanvas *curCanvas = nullptr;
+    MyListCanvas *my_list_canvas = nullptr;
+    MyListCanvas *curCanvas = nullptr;
 
-    void selectCanvas(MyCanvas *canvas);
-    void deleteCanvas(MyCanvas *canvas);
+    void selectListCanvas(MyListCanvas *canvas);
+    void deleteListCanvas(MyListCanvas *canvas);
     void Init();
 
     enum
@@ -73,8 +72,6 @@ private:
     QRect lastGeometry;
     void controlWindowScale();
 
-    MyCanvas *loadCanvas(const QString &path);
-
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -88,11 +85,11 @@ private:
         Theme_none = 2
     };
     Theme theme = Theme_write;
+    bool night_mode = false;
     bigIconButton *Linked_List = nullptr;
     bigIconButton *Queue = nullptr;
     bigIconButton *BST = nullptr;
 
-    QVector<textInputItem *> about_texts;
     void theme_switch();
     void theme_refresh();
 };

@@ -1,4 +1,4 @@
-#include "./head/customWidgets.h"
+﻿#include "./head/customWidgets.h"
 #include <QVBoxLayout>
 #include <QGraphicsOpacityEffect>
 
@@ -61,6 +61,7 @@ void customIcon::setHoverColor(const QColor &newHoverColor)
 }
 
 void customIcon::paintEvent(QPaintEvent *event){
+    Q_UNUSED(event);
     resize(height() / widgetRatio, height());
 
     QPainter bgPainter(this);
@@ -80,16 +81,19 @@ void customIcon::paintEvent(QPaintEvent *event){
 }
 
 void customIcon::enterEvent(QEnterEvent *event){
+    Q_UNUSED(event);
     bgColor = hoverColor;
     update();
 }
 
 void customIcon::leaveEvent(QEvent *event){
+    Q_UNUSED(event);
     bgColor = defaultColor;
     update();
 }
 
 void customIcon::mousePressEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     emit clicked();
     setFocus();
     iconSizeRate -= 0.1;
@@ -97,6 +101,7 @@ void customIcon::mousePressEvent(QMouseEvent *event){
 }
 
 void customIcon::mouseReleaseEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     iconSizeRate += 0.1;
     update();
 }
@@ -159,6 +164,7 @@ selectionItem::selectionItem(QString name, QString info, QWidget *parent) :
 }
 
 void selectionItem::enterEvent(QEnterEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet("border-radius:5px;background-color:#0a000000");
     QParallelAnimationGroup *enter = new QParallelAnimationGroup(this);
     QPropertyAnimation *longer = new QPropertyAnimation(indicator, "geometry", this);
@@ -176,6 +182,7 @@ void selectionItem::enterEvent(QEnterEvent *event){
 }
 
 void selectionItem::leaveEvent(QEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet("border-radius:5px;background-color:#00000000");
     QParallelAnimationGroup *leave = new QParallelAnimationGroup(this);
     QPropertyAnimation *shorter = new QPropertyAnimation(indicator, "geometry", this);
@@ -196,6 +203,7 @@ void selectionItem::leaveEvent(QEvent *event){
 }
 
 void selectionItem::mousePressEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet("border-radius:5px;background-color:#1a000000");
     QPropertyAnimation *shorter = new QPropertyAnimation(indicator, "geometry", this);
     shorter->setStartValue(indicator->geometry());
@@ -208,6 +216,7 @@ void selectionItem::mousePressEvent(QMouseEvent *event){
 }
 
 void selectionItem::mouseReleaseEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     if(mousePressed){
         bgWidget->setStyleSheet("border-radius:5px;background-color:#0a000000");
         QPropertyAnimation *longer = new QPropertyAnimation(indicator, "geometry", this);
@@ -229,6 +238,7 @@ void selectionItem::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void selectionItem::resizeEvent(QResizeEvent *event){
+    Q_UNUSED(event);
     bgWidget->resize(this->size());
 }
 
@@ -501,7 +511,7 @@ bigIconButton::bigIconButton(const QString &iconPath, const QString &description
     this->setMinimumHeight(200);
 }
 
-void bigIconButton::changeIcon(const QString &iconPath)
+void bigIconButton::changeIcon(const QString iconPath)
 {
     iconImg = new QPixmap(iconPath);
     icon->setPixmap(*iconImg);
@@ -510,6 +520,7 @@ void bigIconButton::changeIcon(const QString &iconPath)
 }
 
 void bigIconButton::resizeEvent(QResizeEvent *event){
+    Q_UNUSED(event);
     bgWidget->setFixedSize(this->size());
     if(onSelected){
         indicator->resize(this->width() * 0.1, 6);
@@ -522,6 +533,7 @@ void bigIconButton::resizeEvent(QResizeEvent *event){
 }
 
 void bigIconButton::enterEvent(QEnterEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet(radiusStyle + "background-color:#0a0078D4");
     QPropertyAnimation *longer = new QPropertyAnimation(indicator, "geometry", this);
     longer->setStartValue(indicator->geometry());
@@ -534,6 +546,7 @@ void bigIconButton::enterEvent(QEnterEvent *event){
 }
 
 void bigIconButton::leaveEvent(QEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet(radiusStyle + "background-color:#04000000");
     QPropertyAnimation *shorter = new QPropertyAnimation(indicator, "geometry", this);
     shorter->setStartValue(indicator->geometry());
@@ -553,6 +566,7 @@ void bigIconButton::leaveEvent(QEvent *event){
 }
 
 void bigIconButton::mousePressEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet(radiusStyle + "background-color:#1a0078D4");
     QPropertyAnimation *shorter = new QPropertyAnimation(indicator, "geometry", this);
     shorter->setStartValue(indicator->geometry());
@@ -565,6 +579,7 @@ void bigIconButton::mousePressEvent(QMouseEvent *event){
 }
 
 void bigIconButton::mouseReleaseEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     if(mousePressed){
         bgWidget->setStyleSheet(radiusStyle + "background-color:#0a0078D4");
         QPropertyAnimation *longer = new QPropertyAnimation(indicator, "geometry", this);
@@ -605,23 +620,25 @@ textInputItem::textInputItem(const QString &name, QWidget *parent) :
     editor = new QLineEdit(this);
     editor->setText("");
     editor->setFixedHeight(fm.lineSpacing());
-    editor->setStyleSheet("color:#5c5c5c;background-color:#00000000;border-style:none;");
+    //editor->setStyleSheet("color:#5c5c5c;background-color:#00000000;border-style:none;");
+    editor->setStyleSheet("border-style:none;");
     editor->setReadOnly(true);
     editor->setFont(textFont);
 
     bgWidget = new QWidget(this);
-    bgWidget->setStyleSheet("background-color:#00000000;border-radius:5px;");
+    //bgWidget->setStyleSheet("background-color:#00000000;border-radius:5px;");
+    bgWidget->setStyleSheet("border-radius:5px;");
     bgWidget->lower();
     bgWidget->show();
 
     indicator = new QWidget(this);
     indicator->setFixedHeight(4);
-    indicator->setStyleSheet("background-color:#0078d4;border-radius:2px");
+    //indicator->setStyleSheet("background-color:#0078d4;border-radius:2px");
+    indicator->setStyleSheet("border-radius:2px");
 
     opac = new QGraphicsOpacityEffect(this);
     opac->setOpacity(0);
     indicator->setGraphicsEffect(opac);
-
     this->setFixedHeight(itemName->height() + 10);
 
     connect(editor, &QLineEdit::returnPressed, this, [=](){
@@ -644,13 +661,32 @@ textInputItem::textInputItem(const QString &name, QWidget *parent) :
     });
 }
 
-void textInputItem::setTheme(QColor color_background, QColor color_content)
+void textInputItem::setTheme(bool night_mode)
 {
+    QColor background_color = Qt::white;
+    QColor content_color = Qt::black;
+    if(night_mode)
+    {
+        background_color = Qt::black;
+        content_color = Qt::white;
+    }
+    setStyleSheet(QString("background-color:%1;color:%2;")
+                  .arg(background_color.name())
+                  .arg(content_color.name()));
     itemName->setStyleSheet(QString("background-color:%1;color:%2;")
-                            .arg(color_background.name())
-                            .arg(color_content.name()));
+                            .arg(background_color.name())
+                            .arg(content_color.name()));
+    editor->setStyleSheet(QString("background-color:%1;color:%2;border-style:none;")
+                          .arg(background_color.name())
+                          .arg(content_color.name()));
+    bgWidget->setStyleSheet(QString("background-color:%1;border-radius:5px;")
+                            .arg(background_color.name()));
+    indicator->setStyleSheet(QString("background-color:%1;border-radius:2px")
+                             .arg(background_color.name()));
 }
+
 void textInputItem::resizeEvent(QResizeEvent *event){
+    Q_UNUSED(event);
     itemName->move(margin, this->height() / 2 - itemName->height() / 2);
     itemName->setFixedWidth(this->width() * 0.3 - margin - spacing);
     int width = QFontMetrics(editor->font()).size(Qt::TextSingleLine, editor->text()).width() + 3;
@@ -667,12 +703,13 @@ void textInputItem::resizeEvent(QResizeEvent *event){
         editor->move(this->width() * 0.3, this->height() / 2 - editor->height() / 2 - 2);
         indicator->move(this->width() * 0.3, this->height() - 7);
     }
-    bgWidget->setFixedSize(this->size());
+    bgWidget->setFixedSize(this->size() - QSize(2, 0));
+    bgWidget->move(1, 0);
 }
 
 void textInputItem::enterEditEffect(){
     editor->setCursorPosition(editor->text().length());
-    editor->setStyleSheet("color:#1c1c1c;background-color:#00000000;border-style:none;");
+    //editor->setStyleSheet("color:#1c1c1c;background-color:#00000000;border-style:none;");
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
     QPropertyAnimation *longer = new QPropertyAnimation(indicator, "geometry", this);
     longer->setStartValue(indicator->geometry());
@@ -696,7 +733,7 @@ void textInputItem::enterEditEffect(){
 
 void textInputItem::leaveEditEffect(){
     editor->setCursorPosition(0);
-    editor->setStyleSheet("color:#5c5c5c;background-color:#00000000;border-style:none;");
+    //editor->setStyleSheet("color:#5c5c5c;background-color:#00000000;border-style:none;");
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
     QPropertyAnimation *shorter = new QPropertyAnimation(indicator, "geometry", this);
     shorter->setStartValue(indicator->geometry());
@@ -723,21 +760,25 @@ void textInputItem::leaveEditEffect(){
 }
 
 void textInputItem::enterEvent(QEnterEvent *event){
-    bgWidget->setStyleSheet("border-radius:5px;background-color:#0a000000");
+    Q_UNUSED(event);
+    //bgWidget->setStyleSheet("border-radius:5px;background-color:#0a000000");
 }
 
 void textInputItem::leaveEvent(QEvent *event){
-    bgWidget->setStyleSheet("border-radius:5px;background-color:#00000000");
+    Q_UNUSED(event);
+    //bgWidget->setStyleSheet("border-radius:5px;background-color:#00000000");
 }
 
 void textInputItem::mousePressEvent(QMouseEvent *event){
-    bgWidget->setStyleSheet("border-radius:5px;background-color:#1a000000");
+    Q_UNUSED(event);
+    //bgWidget->setStyleSheet("border-radius:5px;background-color:#1a000000");
     mousePressed = true;
 }
 
 void textInputItem::mouseReleaseEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     if(mousePressed){
-        bgWidget->setStyleSheet("border-radius:5px;background-color:#0a000000");
+        //bgWidget->setStyleSheet("border-radius:5px;background-color:#0a000000");
         if(onEditing){
             leaveEditEffect();
             onEditing = false;
@@ -812,7 +853,6 @@ textButton::textButton(QString text, QString defC, QString hoverC, QString press
     btnText->setFont(textFont);
     btnText->setFixedHeight(height);
     btnText->setFixedWidth(fm.size(Qt::TextSingleLine, text).width() + 2);
-    btnText->setStyleSheet("color:#1c1c1c");
     btnText->setAlignment(Qt::AlignCenter);
 
     bgWidget = new QWidget(this);
@@ -822,15 +862,18 @@ textButton::textButton(QString text, QString defC, QString hoverC, QString press
 }
 
 void textButton::resizeEvent(QResizeEvent *event){
+    Q_UNUSED(event);
     bgWidget->resize(this->size());
     btnText->move(this->width() / 2 - btnText->width() / 2, this->height() / 2 - btnText->height() / 2);
 }
 
 void textButton::enterEvent(QEnterEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet("background-color:"+hoverColor+";border-radius:5px;");
 }
 
 void textButton::leaveEvent(QEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet("background-color:"+defaultColor+";border-radius:5px;");
     if(mousePressed){
         bgWidget->setStyleSheet("background-color:"+pressedColor+";border-radius:5px;");
@@ -845,6 +888,7 @@ void textButton::leaveEvent(QEvent *event){
 }
 
 void textButton::mousePressEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     bgWidget->setStyleSheet("background-color:"+pressedColor+";border-radius:5px;");
     QPropertyAnimation *shrink = new QPropertyAnimation(bgWidget, "geometry", this);
     shrink->setStartValue(bgWidget->geometry());
@@ -857,6 +901,7 @@ void textButton::mousePressEvent(QMouseEvent *event){
 }
 
 void textButton::mouseReleaseEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     if(mousePressed){
         bgWidget->setStyleSheet("background-color:"+hoverColor+";border-radius:5px;");
         QPropertyAnimation *enlarge = new QPropertyAnimation(bgWidget, "geometry", this);
@@ -868,4 +913,26 @@ void textButton::mouseReleaseEvent(QMouseEvent *event){
         mousePressed = false;
         emit clicked();
     }
+}
+
+void textButton::setTheme(bool night_mode)
+{
+    QColor background_color = Qt::white;
+    QColor content_color = Qt::black;
+    if(night_mode)
+    {
+        background_color = Qt::black;
+        content_color = Qt::white;
+    }
+    setStyleSheet(QString("background-color:%1;color:%2;")
+                  .arg(background_color.name())
+                  .arg(content_color.name()));
+//    setStyleSheet(QString("background-color:%1;color:%2;")
+//                           .arg(color_background.name())
+//                           .arg(color_content.name()));
+        btnText->setStyleSheet(QString("color:%2;")
+                                    .arg(content_color.name()));
+//    bgWidget->setStyleSheet(QString("background-color:%1;color:%2;")
+//                            .arg(color_background.name())
+//                            .arg(color_content.name()));
 }

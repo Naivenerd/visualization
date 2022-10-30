@@ -1,4 +1,4 @@
-#include "./head/graph_view.h"
+﻿#include "./head/graph_view.h"
 #include <QDebug>
 
 viewLog::viewLog(QString log, QWidget *parent) : QLabel(parent)
@@ -11,6 +11,7 @@ viewLog::viewLog(QString log, QWidget *parent) : QLabel(parent)
 
 void viewLog::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
     QString elideText = QFontMetrics(logFont).elidedText(logText, Qt::ElideRight, this->width() - 5);
     this->setText(elideText);
     this->show();

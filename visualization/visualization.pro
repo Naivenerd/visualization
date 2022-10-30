@@ -16,8 +16,11 @@ SOURCES += \
     ./src/graph_view.cpp \
     ./src/main.cpp \
     ./src/mainwindow.cpp \
-    ./src/mycanvas.cpp \
-    ./src/slidepage.cpp
+    ./src/slidepage.cpp \
+    ./src/mylistcanvas.cpp \
+    dataitem.cpp \
+    lineitem.cpp \
+    mylistview.cpp
 
 HEADERS += \
     ./head/customScrollContainer.h \
@@ -25,8 +28,11 @@ HEADERS += \
     ./head/graph_implement.h \
     ./head/graph_view.h \
     ./head/mainwindow.h \
-    ./head/mycanvas.h \
-    ./head/slidepage.h
+    ./head/slidepage.h \
+    ./head/mylistcanvas.h \
+    dataitem.h \
+    lineitem.h \
+    mylistview.h
 
 FORMS += \
     mainwindow.ui
